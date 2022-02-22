@@ -37,6 +37,8 @@ def check_keywords(s):
 
 def quote_remover(s):
     res = ""
+    if '"' not in s:
+        return s
     for i in s:
         if i != '"':
             res += "".join(i)
