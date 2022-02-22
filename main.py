@@ -14,7 +14,7 @@ c = db.cursor()
 
 #CSV CONFIGURATION
 
-filename = "Sample2000.csv"
+filename = "filename.csv"
 tablename = filename[:-4]
 column_names = []
 column_1 = []
