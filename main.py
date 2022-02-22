@@ -2,6 +2,7 @@ import mysql.connector
 import csv
 from utils import check_keywords, space_remover, quote_remover
 #MySQL connector
+#Take into account that the user must have privileges and the database must have been created beforehand
 db = mysql.connector.connect(
     host="localhost",
     user="your_user",
@@ -52,6 +53,7 @@ with open(filename) as csvfile:
 #SQL EXECUTES
 #create the table with only the first row of the csv file as column values
 c.execute("USE maindb")
+
 c.execute("CREATE TABLE %s (%s %s);" % (tablename, column_names[0], data_types[0]))
 
 #add the other columns
@@ -104,3 +106,5 @@ with open(filename) as csvfile:
             query = f"INSERT INTO {tablename} ({column_names_string}) VALUES "
             final_query = query + arguments
             c.execute(final_query % tuple(row))
+db.commit()
+db.close()
