@@ -19,7 +19,9 @@ tablename = filename[:-4]
 column_names = []
 column_1 = []
 data_types = []
-    #get first row, which are the names of all the columns
+    
+    
+#get first row, which are the names of all the columns
 with open(filename) as csvfile:
     #init file reader
     reader = csv.reader(csvfile, delimiter=",")
@@ -29,6 +31,7 @@ with open(filename) as csvfile:
         column_names = column_names[0]
         for x in range(len(column_names)):
             #reformat column names so they are correct and dont interfere with SQL syntax
+            #check if this counts as prevention for sql injection
             column_names[x] = space_remover(column_names[x])
             column_names[x] = check_keywords(column_names[x])
         break 
@@ -53,7 +56,6 @@ with open(filename) as csvfile:
 #SQL EXECUTES
 #create the table with only the first row of the csv file as column values
 c.execute("USE maindb")
-
 c.execute("CREATE TABLE %s (%s %s);" % (tablename, column_names[0], data_types[0]))
 
 #add the other columns
@@ -70,7 +72,7 @@ with open(filename) as csvfile:
             counter +=1
         else:
             for m in range(len(row)):
-                #if the cell value is not an integer, 
+                #if the cell value is an integer, 
                 #format it so it is correct to be inserted into the db as an int
                 if row[m].isdigit():
                     row[m] = int(row[m])
@@ -79,13 +81,12 @@ with open(filename) as csvfile:
                     row[m] = quote_remover(row[m])
             #COLUMN CONFIGURATION
             column_names_string = ""
-            for n in range(len(column_names)):
-                #Add the list element with a comma to the string
-                #The last element does not have a comma after it, it would be a trailing comma
-                if column_names[n] != column_names[-1]:
-                    column_names_string += column_names[n] + ", "
-                else:
-                    column_names_string += column_names[n]
+            for n in range(len(column_names)-1):
+                #Add the list elements with a comma to the string (up to the last one)
+                column_names_string += column_names[n] + ", "
+                #The last element must not have a comma after it, it would be a trailing comma otherwise
+            column_names_string += column_names[-1]
+
 
             #FORMAT THE QUERY AND EXECUTE IT
                 #This string format is for the queries to be somewhat like this:
